@@ -111,6 +111,13 @@ export default function App() {
         <p className="notice" aria-live="polite">{notice || 'المعاينة الحالية تستخدم الأصوات المثبتة على هاتفك.'}</p>
       </section>
 
+      <section className="panel engine-panel">
+        <div className="section-head"><div><span className="step">04</span><h2>محرك الصوت المصري AI</h2></div><span className="engine-live">محرك خارجي</span></div>
+        <p className="hint engine-copy">محرك VoiceTut متخصص في اللهجة المصرية، ويدعم أصواتًا جاهزة واستنساخ الصوت المرجعي بموافقة صاحبه.</p>
+        <a className="primary engine-link" href="https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS" target="_blank" rel="noreferrer">🎙️ افتح استوديو VoiceTut المصري</a>
+        <p className="hint">التوليد يتم داخل خدمة VoiceTut الخارجية، وليس داخل معاينة هذا التطبيق بعد. قد تحتاج الخدمة وقتًا للاستيقاظ، وقد تتغير حدود الاستخدام المجاني.</p>
+      </section>
+
       <footer><span>SELO VOICE ACTOR AI</span><span>صُنع للحكايات اللي تستاهل تتسمع</span></footer>
     </main>
   )
