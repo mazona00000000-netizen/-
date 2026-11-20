@@ -28,7 +28,7 @@ export default function App() {
         const file = new File(chunksRef.current, 'voice-reference.webm', { type: recorder.mimeType || 'audio/webm' })
         setVoiceSample(file)
         stream.getTracks().forEach(track => track.stop())
-        setNotice('הتسجيل جاهز. اكتب الكلام اللي قلته في التسجيل لتحسين تطابق الصوت.')
+        setNotice('التسجيل جاهز. اكتب الكلام اللي قلته في التسجيل لتحسين تطابق الصوت.')
       }
       recorder.start()
       setRecording(true)
@@ -74,7 +74,8 @@ export default function App() {
         speed,
         true,
       ])
-      const file = result.data[0] as { url?: string; path?: string }
+      const resultData = result.data as unknown[]
+      const file = resultData[0] as { url?: string; path?: string }
       const audioUrl = file?.url || file?.path
       if (!audioUrl) throw new Error('No audio file returned')
       setGeneratedAudio(audioUrl)
