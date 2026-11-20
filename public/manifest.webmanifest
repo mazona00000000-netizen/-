@@ -1,0 +1,12 @@
+{
+  "name": "SELO Voice Actor AI",
+  "short_name": "SELO Voice",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101014",
+  "theme_color": "#101014",
+  "description": "استوديو التعليق الصوتي العربي"
+}
