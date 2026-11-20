@@ -14,7 +14,7 @@ export default function App() {
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
   const scriptTextRef = useRef<HTMLTextAreaElement | null>(null)
-  const words = script.trim() ? script.trim().split(/\\s+/).length : 0
+  const words = script.trim() ? script.trim().split(/\s+/).length : 0
 
   async function startRecording() {
     try {
