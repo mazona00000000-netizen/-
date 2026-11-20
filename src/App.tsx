@@ -13,6 +13,7 @@ export default function App() {
   const [notice, setNotice] = useState('')
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
+  const scriptTextRef = useRef<HTMLTextAreaElement | null>(null)
   const words = script.trim() ? script.trim().split(/\\s+/).length : 0
 
   async function startRecording() {
@@ -45,7 +46,8 @@ export default function App() {
 
   async function generate() {
     if (!script.trim()) {
-      setNotice('اكتب النص اللي عايز تحوله لصوت.')
+      setNotice('الخانة الأولى فاضية: اكتب فيها النص الجديد اللي عايز يتحول لصوت. الكلام الموجود في التسجيل مش هو النص المطلوب.')
+      scriptTextRef.current?.focus()
       return
     }
     if (!voiceSample) {
@@ -75,13 +77,16 @@ export default function App() {
         true,
       ])
       const resultData = result.data as unknown[]
-      const file = resultData[0] as { url?: string; path?: string }
-      const audioUrl = file?.url || file?.path
+      const output = resultData[0]
+      const file = typeof output === 'string' ? null : output as { url?: string; path?: string }
+      const audioUrl = file?.url || file?.path || (typeof output === 'string' ? output : '')
       if (!audioUrl) throw new Error('No audio file returned')
       setGeneratedAudio(audioUrl)
       setNotice('الصوت اتولد. اسمعه هنا أو نزّله على جهازك.')
-    } catch {
-      setNotice('ماقدرناش نولّد الصوت دلوقتي. جرّب تاني بعد شوية؛ ممكن المحرك يكون نايم أو مشغول.')
+    } catch (error) {
+      console.error('Voice generation failed', error)
+      const detail = error instanceof Error ? error.message.slice(0, 180) : ''
+      setNotice(detail ? `فشل التوليد: ${detail}` : 'ماقدرناش نولّد الصوت دلوقتي. جرّب تاني بعد شوية؛ ممكن المحرك يكون نايم أو مشغول.')
     } finally {
       setGenerating(false)
     }
@@ -102,9 +107,9 @@ export default function App() {
       </section>
 
       <section className="panel script-panel">
-        <div className="section-head"><div><span className="step">01</span><h2>النص الصوتي</h2></div><span className="counter">{words} كلمة</span></div>
-        <textarea value={script} onChange={e => setScript(e.target.value)} placeholder="اكتب هنا نص الحكاية أو التعليق الصوتي..." />
-        <div className="hint">علامات الترقيم بتساعد على وقفات طبيعية أثناء الإلقاء.</div>
+        <div className="section-head"><div><span className="step">01</span><h2>النص اللي هيتحوّل لصوت</h2></div><span className="counter">{words} كلمة</span></div>
+        <textarea ref={scriptTextRef} value={script} onChange={e => setScript(e.target.value)} placeholder="اكتب هنا النص الجديد اللي عايز تسمعه بصوتك..." />
+        <div className="hint">اكتب النص النهائي المراد نطقه هنا. ده غير الكلام اللي هتكتبه في خانة عيّنة الصوت بالأسفل.</div>
       </section>
 
       <section className="panel">
@@ -115,8 +120,8 @@ export default function App() {
           <label className="secondary upload-label">📁 ارفع تسجيلًا<input type="file" accept="audio/*" onChange={e => { setVoiceSample(e.target.files?.[0] ?? null); setNotice(e.target.files?.[0] ? 'تم اختيار التسجيل.' : '') }} /></label>
         </div>
         {voiceSample && <div className="file-row"><span>العينة: {voiceSample.name}</span><button type="button" className="text-button" onClick={() => setVoiceSample(null)}>حذف</button></div>}
-        <label className="field-label ref-label" htmlFor="reference-text">الكلام الموجود في التسجيل</label>
-        <textarea id="reference-text" className="reference-text" value={referenceText} onChange={e => setReferenceText(e.target.value)} placeholder="اكتب الجملة اللي قلتها في التسجيل؛ ده بيساعد على نتيجة أدق. ممكن تسيبه فاضي." />
+        <label className="field-label ref-label" htmlFor="reference-text" >تفريغ عيّنة الصوت (اختياري)</label>
+        <textarea id="reference-text" className="reference-text" value={referenceText} onChange={e => setReferenceText(e.target.value)} placeholder="اكتب نفس الجملة اللي قلتها في التسجيل؛ مش النص الجديد. ممكن تسيبه فاضي." />
         <label className="consent-row"><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} /><span>العينة صوتي، أو عندي إذن صريح من صاحب الصوت لاستخدامها.</span></label>
         <p className="privacy-note">عند التوليد، التسجيل والنص يُرسلان إلى VoiceTut على Hugging Face لإنتاج الصوت. لا ترفع تسجيلًا خاصًا أو صوت شخص آخر من دون إذنه.</p>
       </section>
