@@ -71,7 +71,7 @@ export default function App() {
         '',
         handle_file(voiceSample),
         referenceText.trim(),
-        48,
+        32,
         2.5,
         speed,
         true,
